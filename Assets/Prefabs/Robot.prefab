@@ -415,3 +415,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 058672dc070f76b4fbfdc25d021399b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  robotData: {fileID: 4900000, guid: 3ba50641be098b1488123d8c4a198de9, type: 3}

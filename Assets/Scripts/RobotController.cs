@@ -4,10 +4,23 @@ using UnityEngine;
 
 public class RobotController : MonoBehaviour
 {
+    public TextAsset robotData;
+
     private CoroutineQueue queue;
     private List<Coroutine> coroutines = new List<Coroutine>();
+    private List<string> commands = new List<string>();
+
     void Start()
     {
+        string tempData = robotData.text;
+        List<string> tempCommands = new List<string>();
+        //add every line from text to list
+        tempCommands.AddRange(tempData.Trim().Split("\n"[0]));
+        //sort the list for any strings that doesnt start with "//" or white spaces and then add it to the commands list.
+        foreach (string s in tempCommands)
+            if (!s.StartsWith("//") && !char.IsWhiteSpace(s[0]))
+                commands.Add(s.Trim());
+
         queue = new CoroutineQueue(this);
         queue.StartLoop();
     }
@@ -19,7 +32,7 @@ public class RobotController : MonoBehaviour
         yield return null;
     }
 
-    //Rotate the robot around the Y axis D degrees at DS degrees per second.
+    //Rotate the robot around the Y axis degree at degreeSpeed per second.
     public IEnumerator ROTATE(float degree, float degreeSpeed)
     {
 
@@ -41,7 +54,9 @@ public class RobotController : MonoBehaviour
             //rotate until reached angle
             if (deltaAngle < degree)
             {
+                //rotate speed;
                 deltaAngle += degreeSpeed * Time.deltaTime;
+                //returns the smallest angle so it doesn't overshoot
                 deltaAngle = Mathf.Min(deltaAngle, degree);
                 // The rotation is relative from the robot's current rotation.
                 transform.rotation = startRot * Quaternion.AngleAxis(deltaAngle, Vector3.up);
