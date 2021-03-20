@@ -6,7 +6,7 @@ public class CoroutineQueue
 {
     MonoBehaviour _Owner = null;
     Coroutine _InternalCoroutine = null;
-    Queue<IEnumerator> actions = new Queue<IEnumerator>();
+    public Queue<IEnumerator> actions = new Queue<IEnumerator>();
     public CoroutineQueue(MonoBehaviour aCoroutineOwner)
     {
         _Owner = aCoroutineOwner;
@@ -25,12 +25,20 @@ public class CoroutineQueue
         actions.Enqueue(aAction);
     }
 
+    public void DequeueAction()
+    {
+        _Owner.StartCoroutine(actions.Dequeue());
+    }
+
     private IEnumerator Process()
     {
         while (true)
         {
             if (actions.Count > 0)
+            {
+                Debug.Log(actions.Peek());
                 yield return _Owner.StartCoroutine(actions.Dequeue());
+            }
             else
                 yield return null;
         }
@@ -38,10 +46,5 @@ public class CoroutineQueue
     public void EnqueueWait(IEnumerator wait)
     {
         actions.Enqueue(wait);
-    }
-
-    private IEnumerator Wait(float aWaitTime)
-    {
-        yield return new WaitForSeconds(aWaitTime);
     }
 }
