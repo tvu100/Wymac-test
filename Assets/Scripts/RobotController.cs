@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
@@ -42,7 +42,7 @@ public class RobotController : MonoBehaviour
             string[] method = command.Split(" "[0]);
             //get the meothod name
             string methodName = method[0];
-            //get the parameters from data. 
+            //get the parameters from data, if none set it to null. 
             string methodParams = method.Length > 1 ? method[1] : null;
 
             //ensure that there should only be 2 or 1 strings. One for method name and another for parameters(if any).
@@ -86,7 +86,7 @@ public class RobotController : MonoBehaviour
                     }
                     #endregion
 
-                    //rotate the robot  
+                    //add rotation to the queue 
                     _queue.EnqueueAction(ROTATE(float.Parse(rotValues[0]), float.Parse(rotValues[1])));
                     break;
                 case "MOVE":
@@ -95,7 +95,7 @@ public class RobotController : MonoBehaviour
                     //make sure that it has only 1 params
                     if (method[1].Trim().Contains(",")) throw new ArgumentException("Please make sure there is only 1 parameter in the data");
 
-                    //make sure params are all a number
+                    //make sure params are all a number and if is it'll pass it onto the MOVE method
                     float vel;
                     if (!float.TryParse(methodParams, out vel))
                         throw new ArgumentException($"Please make sure <color=red>{methodParams}</color> parameter is a number", nameof(vel));
@@ -117,9 +117,11 @@ public class RobotController : MonoBehaviour
                     _queue.EnqueueWait(WAIT(float.Parse(methodParams)));
                     break;
                 case "STOP":
+                    //add stop to the queue
                     _queue.EnqueueAction(STOP());
                     break;
                 case "DESTROY":
+                    //add destory to the queue
                     _queue.EnqueueAction(DESTROY());
                     break;
             };
@@ -128,7 +130,7 @@ public class RobotController : MonoBehaviour
 
     void Update()
     {
-        //  this ensure if the robot is moving or rotating it will continue to move/rotate, 
+        //  doing this in the Update() method will ensure if the robot is moving or rotating it will continue to move/rotate, 
         //  whilst the command processor is 'waiting'.
         if (_canMove)
             transform.position += transform.forward * Time.deltaTime * _vel;
@@ -143,7 +145,7 @@ public class RobotController : MonoBehaviour
                 //stop rotating
                 _canRot = false;
             }
-            //check if _rotTarget is positive or negative and then determine the direction to rotate
+            //check if _rotTarget is positive or negative and then determine the direction to rotate, as well as get the smallest or largest angle so it doesn't overshoot and set it to the target rotation when reached.
             deltaAngle = _rotTarget > 0 ? Mathf.Min(deltaAngle += _rotSpeed * Time.deltaTime, _rotTarget) :
                                           Mathf.Max(deltaAngle -= _rotSpeed * Time.deltaTime, _rotTarget);
 
