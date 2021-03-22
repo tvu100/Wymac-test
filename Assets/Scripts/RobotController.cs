@@ -124,6 +124,9 @@ public class RobotController : MonoBehaviour
                     //add destory to the queue
                     _queue.EnqueueAction(DESTROY());
                     break;
+                defualt:
+                    throw new Exception("Please make sure that it's a valid command");
+                break;
             };
         };
     }
